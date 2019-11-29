@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="U6b-Vx-4bR" customClass="LabelCollectionReusableView" customModule="Sample" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="199" height="86"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CgF-aB-Y6e" userLabel="TitleLabel">
+                    <rect key="frame" x="79.5" y="23" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="CgF-aB-Y6e" secondAttribute="height" multiplier="1:1" id="Mio-m0-91R"/>
+                        <constraint firstAttribute="width" constant="40" id="szC-SD-eYy"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="14"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="CgF-aB-Y6e" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="iHY-HB-fEc"/>
+                <constraint firstItem="CgF-aB-Y6e" firstAttribute="centerX" secondItem="U6b-Vx-4bR" secondAttribute="centerX" id="zrR-gI-sYj"/>
+            </constraints>
+            <connections>
+                <outlet property="titleLabel" destination="CgF-aB-Y6e" id="cuT-SZ-SAH"/>
+            </connections>
+            <point key="canvasLocation" x="50.000000000000007" y="164.73214285714286"/>
+        </collectionReusableView>
+    </objects>
+</document>

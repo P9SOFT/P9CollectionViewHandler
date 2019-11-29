@@ -1,0 +1,99 @@
+{
+    "code": 0,
+    "payload": [
+        {
+            "records": [
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                },
+                {
+                    "type": 2,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee",
+                    "header": {
+                        "type": 1,
+                        "title": "H"
+                    },
+                    "footer": {
+                        "type": 1,
+                        "title": "F"
+                    },
+                    "banners": [
+                        {
+                            "type": 1,
+                            "title": "1",
+                            "backgroundColor": "ffeeee"
+                        },
+                        {
+                            "type": 1,
+                            "title": "2",
+                            "backgroundColor": "effeee"
+                        },
+                        {
+                            "type": 1,
+                            "title": "3",
+                            "backgroundColor": "eeffee"
+                        },
+                        {
+                            "type": 2,
+                            "imageId": 1
+                        },
+                        {
+                            "type": 1,
+                            "title": "4",
+                            "backgroundColor": "eeeffe"
+                        },
+                        {
+                            "type": 1,
+                            "title": "5",
+                            "backgroundColor": "eeeeff"
+                        },
+                        {
+                            "type": 1,
+                            "title": "6",
+                            "backgroundColor": "eeeeee"
+                        },
+                        {
+                            "type": 2,
+                            "imageId": 2
+                        },
+                        {
+                            "type": 1,
+                            "title": "7",
+                            "backgroundColor": "eeeeff"
+                        },
+                        {
+                            "type": 1,
+                            "title": "8",
+                            "backgroundColor": "eeeffe"
+                        },
+                        {
+                            "type": 1,
+                            "title": "9",
+                            "backgroundColor": "eeeffe"
+                        },
+                        {
+                            "type": 2,
+                            "imageId": 3
+                        }
+                    ]
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 1,
+                    "title": "hello four",
+                    "textColor" : "111111",
+                    "backgroundColor": "cccccc"
+                }
+            ]
+        }
+     ]
+}

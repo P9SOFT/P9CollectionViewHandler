@@ -1,0 +1,8 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '8.0'
+
+project './Sample'
+
+target "Sample" do
+	pod 'P9TableViewHandler', :path => '~/Workspace/OpenSources/P9TableViewHandler'
+end
