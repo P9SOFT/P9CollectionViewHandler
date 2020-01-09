@@ -59,6 +59,7 @@ extension BannersTableViewCell: P9TableViewCellProtocol {
         titleLabel.text = data["title"] as? String ?? ""
         titleLabel.textColor = (data["textColor"] as? String ?? "000000").colorByHex
         self.backgroundColor = (data["backgroundColor"] as? String ?? "ffffff").colorByHex
+        handler.sections.removeAll()
         if let banners = data["banners"] as? [[String:Any]], banners.count > 0 {
             var records:[P9CollectionViewHandler.Record] = []
             for banner in banners {
@@ -66,9 +67,7 @@ extension BannersTableViewCell: P9TableViewCellProtocol {
             }
             let headerType = (data["header"] as? [String:Any] ?? [:])["type"] as? Int ?? 0
             let footerType = (data["footer"] as? [String:Any] ?? [:])["type"] as? Int ?? 0
-            handler.setSections([P9CollectionViewHandler.Section(headerType: "\(headerType)", headerData: data["header"], footerType: "\(footerType)", footerData: data["footer"], records: records, extra: nil)])
-        } else {
-            handler.setSections([])
+            handler.sections.append(P9CollectionViewHandler.Section(headerType: "\(headerType)", headerData: data["header"], footerType: "\(footerType)", footerData: data["footer"], records: records, extra: nil))
         }
         collectionView.reloadData()
     }

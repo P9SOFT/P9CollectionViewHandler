@@ -17,7 +17,6 @@ class ViewController: UIViewController {
         "2" : BannersTableViewCell.identifier()
     ]
     
-    private var sections:[P9TableViewHandler.Section] = []
     private let handler:P9TableViewHandler = P9TableViewHandler()
     
     let tableView = UITableView(frame: .zero)
@@ -55,8 +54,7 @@ class ViewController: UIViewController {
                 return
         }
         
-        sections.removeAll()
-        
+        handler.sections.removeAll()
         for s in list {
             if let r = s["records"] as? [[String:Any]] {
                 var records:[P9TableViewHandler.Record] = []
@@ -65,11 +63,9 @@ class ViewController: UIViewController {
                         records.append(P9TableViewHandler.Record(type: "\(type)", data: i, extra: nil))
                     }
                 }
-                sections.append(P9TableViewHandler.Section(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
+                handler.sections.append(P9TableViewHandler.Section(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
             }
         }
-        
-        handler.setSections(sections)
         tableView.reloadData()
     }
 }
