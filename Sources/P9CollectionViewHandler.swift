@@ -66,9 +66,9 @@ public extension P9CollectionViewCellProtocol {
 @objc open class P9CollectionViewHandler: NSObject {
     
     @objc(P9CollectionViewRecord) public class Record : NSObject {
-        var type:String
-        var data:Any?
-        var extra:Any?
+        @objc public var type:String
+        @objc public var data:Any?
+        @objc public var extra:Any?
         @objc public init(type:String, data:Any?, extra:Any?) {
             self.type = type
             self.data = data
@@ -77,12 +77,12 @@ public extension P9CollectionViewCellProtocol {
     }
     
     @objc(P9CollectionViewSection) public class Section : NSObject {
-        var headerType:String?
-        var headerData:Any?
-        var footerType:String?
-        var footerData:Any?
-        var extra:Any?
-        var records:[Record]?
+        @objc public var headerType:String?
+        @objc public var headerData:Any?
+        @objc public var footerType:String?
+        @objc public var footerData:Any?
+        @objc public var extra:Any?
+        @objc public var records:[Record]?
         @objc public init(headerType:String?, headerData:Any?, footerType:String?, footerData:Any?, records:[Record]?, extra:Any?) {
             self.headerType = headerType
             self.headerData = headerData
@@ -97,8 +97,8 @@ public extension P9CollectionViewCellProtocol {
     fileprivate var handlerIdentifier:String = ""
     fileprivate var cellIdentifierForType:[String:String] = [:]
     fileprivate var supplementaryIdentifierForType:[String:String] = [:]
-    fileprivate var sections:[Section] = []
-    
+
+    @objc public var sections:[Section] = []
     @objc public weak var delegate:P9CollectionViewHandlerDelegate?
     
     @objc public func standby(identifier:String, cellIdentifierForType:[String:String], supplementaryIdentifierForType:[String:String], collectionView:UICollectionView) {
@@ -115,11 +115,6 @@ public extension P9CollectionViewCellProtocol {
         }
         collectionView.dataSource = self
         collectionView.delegate = self
-    }
-    
-    @objc public func setSections(_ sections:[Section]) {
-        
-        self.sections = sections
     }
 }
 
