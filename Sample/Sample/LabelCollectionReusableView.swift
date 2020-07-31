@@ -24,7 +24,7 @@ class LabelCollectionReusableView: UICollectionReusableView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        delegate?.collectionViewCellEvent(cellIdentifier: LabelCollectionReusableView.identifier(), eventIdentifier: "touch", data: data, extra: nil)
+        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: "touch", data: data, extra: nil)
     }
 }
 

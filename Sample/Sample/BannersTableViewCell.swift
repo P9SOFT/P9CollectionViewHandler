@@ -34,8 +34,9 @@ class BannersTableViewCell: UITableViewCell {
         
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
-        handler.standby(identifier: "banners", cellIdentifierForType: cellIdentifierForType, supplementaryIdentifierForType: supplementaryIdentifierForType, collectionView: collectionView)
         handler.delegate = self
+        handler.standby(identifier: "banners", cellIdentifierForType: cellIdentifierForType, supplementaryIdentifierForType: supplementaryIdentifierForType, collectionView: collectionView)
+        handler.registerCallback(callback: doClickMe(data:extra:), forCellIdentifier: BannerCollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
     }
 }
 
@@ -47,7 +48,7 @@ extension BannersTableViewCell: P9TableViewCellProtocol {
             return 0
         }
         
-        return (TextCollectionViewCell.cellSizeForData(first, extra: nil).height + 8)
+        return (TextCollectionViewCell.cellSizeForData(first, extra: nil).height + 20)
     }
     
     func setData(_ data: Any?, extra: Any?) {
@@ -75,6 +76,14 @@ extension BannersTableViewCell: P9TableViewCellProtocol {
     func setDelegate(_ delegate: P9TableViewCellDelegate) {
         
         self.delegate = delegate
+    }
+}
+
+extension BannersTableViewCell {
+    
+    func doClickMe(data:Any?, extra:Any?) {
+        
+        print("Got Click Me.")
     }
 }
 

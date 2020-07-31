@@ -243,6 +243,24 @@ extension ViewController: P9CollectionViewHandlerDelegate {
 }
 ```
 
+If you don't like huge switch code, then use callback function(or block) for each event identifier.
+
+```swift
+enum EventId: String {
+    case clickMe
+}
+
+handler.registerCallback(callback: doClickMe(data:extra:), forCellIdentifier: CollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
+
+extension TableViewCell {
+    
+    func doClickMe(data:Any?, extra:Any?) {
+        
+        print("Got Click Me.")
+    }
+}
+```
+
 # License
 
 MIT License, where applicable. http://en.wikipedia.org/wiki/MIT_License
