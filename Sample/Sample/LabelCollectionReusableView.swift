@@ -13,6 +13,7 @@ class LabelCollectionReusableView: UICollectionReusableView {
     
     fileprivate var data:[String:Any]?
     fileprivate weak var delegate:P9CollectionViewCellDelegate?
+    fileprivate var indexPath:IndexPath?
     
     @IBOutlet weak var titleLabel: UILabel!
     
@@ -24,7 +25,7 @@ class LabelCollectionReusableView: UICollectionReusableView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
-        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: "touch", data: data, extra: nil)
+        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.labelTouch.rawValue, indexPath: indexPath, data: data, extra: nil)
     }
 }
 
@@ -51,5 +52,10 @@ extension LabelCollectionReusableView: P9CollectionViewCellProtocol {
     func setDelegate(_ delegate: P9CollectionViewCellDelegate) {
 
         self.delegate = delegate
+    }
+    
+    func setIndexPath(_ indexPath: IndexPath) {
+        
+        self.indexPath = indexPath
     }
 }

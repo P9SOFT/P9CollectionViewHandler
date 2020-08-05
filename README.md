@@ -43,7 +43,7 @@ func collectionViewHandlerCellDidSelect(handlerIdentifier: String, cellIdentifie
     // handling collectionview default select action
 }
 
-func collectionViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
+func collectionViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier: String, eventIdentifier: String?, indexPath:IndexPath?, data: Any?, extra: Any?) {
     // handling custom event from cell
 }
 ```
@@ -62,6 +62,7 @@ protocol P9CollectionViewCellProtocol: class {
     static func cellSizeForData(_ data: Any?, extra: Any?) -> CGSize
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9CollectionViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 ```
 
@@ -94,12 +95,16 @@ func setData(_ data: Any?, extra: Any?) {
 ```
 
 setDelegate function pass the callback object to feedback custom event.
-If your collectionview cell have some custom event, confirm P9CollectionViewCellDelegate first.
+If your collectionview cell have some custom event, confirm P9CollectionViewCellDelegate to your controller first.
 
 ```swift
 protocol P9CollectionViewCellDelegate: class {
     
-    func collectionViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    func collectionViewCellEvent(cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
+}
+
+extension ViewController: P9CollectionViewCellDelegate {
+    // ...
 }
 ```
 
@@ -111,7 +116,20 @@ func setDelegate(_ delegate: P9CollectionViewCellDelegate) {
 }
 
 override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    delegate?.collectionViewCellEvent(cellIdentifier: SampleCollectionViewCell.identifier(), eventIdentifier: "touch", data: data, extra: nil)
+    delegate?.collectionViewCellEvent(cellIdentifier: SampleCollectionViewCell.identifier(), eventIdentifier: "touch", indexPath: nil, data: data, extra: nil)
+}
+```
+
+setIndexPath function pass the indexPth object.
+You can store this indexPath information and send it with event delegate call.
+
+```swift
+func setIndexPath(_ indexPath: IndexPath) {
+    self.indexPath = indexPath
+}
+
+override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    delegate?.collectionViewCellEvent(cellIdentifier: SampleCollectionViewCell.identifier(), eventIdentifier: "touch", indexPath: indexPath, data: data, extra: nil)
 }
 ```
 
@@ -224,7 +242,7 @@ Here is protocol and implement sample.
     @objc optional func collectionViewHandler(handlerIdentifier:String, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
     @objc optional func collectionViewHandler(handlerIdentifier:String, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
     @objc optional func collectionViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
-    @objc optional func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    @objc optional func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 ```
 
@@ -236,7 +254,7 @@ extension ViewController: P9CollectionViewHandlerDelegate {
         print("handler \(handlerIdentifier) cell \(cellIdentifier) indexPath \(indexPath.section):\(indexPath.row) did select")
     }
     
-    func collectionViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, data: Any?, extra: Any?) {
+    func collectionViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, indexPath: IndexPath?, data: Any?, extra: Any?) {
         
         print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "")")
     }
@@ -250,15 +268,21 @@ enum EventId: String {
     case clickMe
 }
 
-handler.registerCallback(callback: doClickMe(data:extra:), forCellIdentifier: CollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
+handler.registerCallback(callback: doClickMe(indexPath:data:extra:), forCellIdentifier: CollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
 
 extension TableViewCell {
     
-    func doClickMe(data:Any?, extra:Any?) {
+    func doClickMe(indexPath:IndexPath?, data:Any?, extra:Any?) {
         
         print("Got Click Me.")
     }
 }
+```
+
+You can also use callback function(or block) for selecting cell event by not passing event identifier.
+
+```swfit
+handler.registerCallback(callback: collectionViewCellSelectHandler(indexPath:data:extra:), forCellIdentifier: CollectionViewCell.identifier())
 ```
 
 # License

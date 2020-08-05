@@ -9,5 +9,6 @@
 import Foundation
 
 enum EventId: String {
+    case labelTouch
     case clickMe
 }

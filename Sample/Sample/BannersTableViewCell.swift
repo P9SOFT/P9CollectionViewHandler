@@ -36,7 +36,7 @@ class BannersTableViewCell: UITableViewCell {
         
         handler.delegate = self
         handler.standby(identifier: "banners", cellIdentifierForType: cellIdentifierForType, supplementaryIdentifierForType: supplementaryIdentifierForType, collectionView: collectionView)
-        handler.registerCallback(callback: doClickMe(data:extra:), forCellIdentifier: BannerCollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
+        handler.registCallback(callback: clickMe(indexPath:data:extra:), forCellIdentifier: BannerCollectionViewCell.identifier(), withEventIdentifier: EventId.clickMe.rawValue)
     }
 }
 
@@ -81,9 +81,13 @@ extension BannersTableViewCell: P9TableViewCellProtocol {
 
 extension BannersTableViewCell {
     
-    func doClickMe(data:Any?, extra:Any?) {
+    func clickMe(indexPath:IndexPath?, data:Any?, extra:Any?) {
         
-        print("Got Click Me.")
+        if let indexPath = indexPath {
+            print("click me at \(indexPath)")
+        } else {
+            print("click me")
+        }
     }
 }
 
@@ -91,12 +95,16 @@ extension BannersTableViewCell: P9CollectionViewHandlerDelegate {
     
     func collectionViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?) {
         
-        delegate?.tableViewCellEvent(cellIdentifier: cellIdentifier, eventIdentifier: "select \(indexPath)", data: data, extra: extra)
+        print("handler \(handlerIdentifier) cell \(cellIdentifier) indexPath \(indexPath.section):\(indexPath.row) did select")
     }
     
-    func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?) {
+    func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?) {
         
-        delegate?.tableViewCellEvent(cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        if let indexPath = indexPath {
+            print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "") at \(indexPath)")
+        } else {
+            print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "")")
+        }
     }
     
     func collectionViewHandler(handlerIdentifier:String, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

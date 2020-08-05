@@ -23,7 +23,7 @@ class BannerCollectionViewCell: UICollectionViewCell {
     
     @IBAction func clickButtonTouchUpInside(_ sender: Any) {
         
-        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.clickMe.rawValue, data: data, extra: nil)
+        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.clickMe.rawValue, indexPath: nil, data: data, extra: nil)
     }
 }
 
