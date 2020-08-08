@@ -11,7 +11,7 @@ import UIKit
 
 @objc public protocol P9CollectionViewCellDelegate: class {
     
-    func collectionViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    func collectionViewCellEvent(cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 
 public protocol P9CollectionViewCellProtocol: class {
@@ -21,6 +21,7 @@ public protocol P9CollectionViewCellProtocol: class {
     static func cellSizeForData(_ data: Any?, extra: Any?) -> CGSize
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9CollectionViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 
 public extension P9CollectionViewCellProtocol {
@@ -36,6 +37,8 @@ public extension P9CollectionViewCellProtocol {
     }
     
     func setDelegate(_ delegate:P9CollectionViewCellDelegate) {}
+    
+    func setIndexPath(_ indexPath: IndexPath) {}
 }
 
 @objc public protocol P9CollectionViewCellObjcProtocol: class {
@@ -45,6 +48,7 @@ public extension P9CollectionViewCellProtocol {
     static func cellSizeForData(_ data: Any?, extra: Any?) -> CGSize
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9CollectionViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 
 @objc public protocol P9CollectionViewHandlerDelegate: class {
@@ -60,7 +64,7 @@ public extension P9CollectionViewCellProtocol {
     @objc optional func collectionViewHandler(handlerIdentifier:String, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
     @objc optional func collectionViewHandler(handlerIdentifier:String, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
     @objc optional func collectionViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
-    @objc optional func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    @objc optional func collectionViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 
 @objc open class P9CollectionViewHandler: NSObject {
@@ -93,10 +97,13 @@ public extension P9CollectionViewCellProtocol {
         }
     }
     
+    public typealias CallbackBlock = (_ indexPath:IndexPath?, _ data:Any?, _ extra:Any?) -> Void
+    
     fileprivate let moduleName = Bundle.main.infoDictionary?["CFBundleName"] as? String ?? ""
     fileprivate var handlerIdentifier:String = ""
     fileprivate var cellIdentifierForType:[String:String] = [:]
     fileprivate var supplementaryIdentifierForType:[String:String] = [:]
+    fileprivate var callbackBlocks:[String:CallbackBlock] = [:]
 
     @objc public var sections:[Section] = []
     @objc public weak var delegate:P9CollectionViewHandlerDelegate?
@@ -115,6 +122,32 @@ public extension P9CollectionViewCellProtocol {
         }
         collectionView.dataSource = self
         collectionView.delegate = self
+    }
+    
+    @objc public func registCallback(callback: @escaping CallbackBlock, forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) {
+        
+        callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] = callback
+    }
+    
+    @objc public func unregistCallback(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) {
+        
+        callbackBlocks.removeValue(forKey: key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier))
+    }
+    
+    @objc public func unregistAllCallbacks() {
+        
+        callbackBlocks.removeAll()
+    }
+}
+
+extension P9CollectionViewHandler {
+    
+    fileprivate func key(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) -> String {
+        
+        if let eventIdentifier = eventIdentifier {
+            return "\(cellIdentifier):\(eventIdentifier)"
+        }
+        return "\(cellIdentifier):"
     }
 }
 
@@ -142,15 +175,19 @@ extension P9CollectionViewHandler: UICollectionViewDataSource, UICollectionViewD
         }
         
         switch kind {
-        case UICollectionView.elementKindSectionHeader :
+        case UICollectionView.elementKindSectionHeader, UICollectionView.elementKindSectionFooter :
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: clsName, for: indexPath)
-            (view as? P9CollectionViewCellProtocol)?.setData(sections[indexPath.section].headerData, extra: sections[indexPath.section].extra)
-            (view as? P9CollectionViewCellProtocol)?.setDelegate(self)
-            return view
-        case UICollectionView.elementKindSectionFooter :
-            let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: clsName, for: indexPath)
-            (view as? P9CollectionViewCellProtocol)?.setData(sections[indexPath.section].footerData, extra: sections[indexPath.section].extra)
-            (view as? P9CollectionViewCellProtocol)?.setDelegate(self)
+            let data = (kind == UICollectionView.elementKindSectionHeader ? sections[indexPath.section].headerData : sections[indexPath.section].footerData )
+            if let view = view as? P9CollectionViewCellProtocol {
+                view.setData(data, extra: sections[indexPath.section].extra)
+                view.setDelegate(self)
+                view.setIndexPath(indexPath)
+            }
+            if let view = view as? P9CollectionViewCellObjcProtocol {
+                view.setData(data, extra: sections[indexPath.section].extra)
+                view.setDelegate(self)
+                view.setIndexPath(indexPath)
+            }
             return view
         default :
             break
@@ -193,11 +230,11 @@ extension P9CollectionViewHandler: UICollectionViewDataSource, UICollectionViewD
                 return .zero
         }
         
-        if let collectoinViewCellContentsCell = cls as? P9CollectionViewCellProtocol.Type {
-            return collectoinViewCellContentsCell.cellSizeForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+        if let cellType = cls as? P9CollectionViewCellProtocol.Type {
+            return cellType.cellSizeForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
         }
-        if let collectoinViewCellContentsCell = cls as? P9CollectionViewCellObjcProtocol.Type {
-            return collectoinViewCellContentsCell.cellSizeForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+        if let cellType = cls as? P9CollectionViewCellObjcProtocol.Type {
+            return cellType.cellSizeForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
         }
         return .zero
     }
@@ -211,13 +248,15 @@ extension P9CollectionViewHandler: UICollectionViewDataSource, UICollectionViewD
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: clsName, for: indexPath)
-        if let collectionViewCellContentsCell = cell as? P9CollectionViewCellProtocol {
-            collectionViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
-            collectionViewCellContentsCell.setDelegate(self)
+        if let cell = cell as? P9CollectionViewCellProtocol {
+            cell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+            cell.setDelegate(self)
+            cell.setIndexPath(indexPath)
         }
-        if let collectionViewCellContentsCell = cell as? P9CollectionViewCellObjcProtocol {
-            collectionViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
-            collectionViewCellContentsCell.setDelegate(self)
+        if let cell = cell as? P9CollectionViewCellObjcProtocol {
+            cell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+            cell.setDelegate(self)
+            cell.setIndexPath(indexPath)
         }
         return cell
     }
@@ -230,7 +269,12 @@ extension P9CollectionViewHandler: UICollectionViewDataSource, UICollectionViewD
         }
         
         let cellIdentifier = cellIdentifierForType[records[indexPath.row].type] ?? records[indexPath.row].type
-        delegate?.collectionViewHandlerCellDidSelect?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
+        
+        if let callback = callbackBlocks[key(forCellIdentifier: cellIdentifier)] {
+            callback(indexPath, records[indexPath.row].data, records[indexPath.row].extra)
+        } else {
+            delegate?.collectionViewHandlerCellDidSelect?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
+        }
     }
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -305,8 +349,12 @@ extension P9CollectionViewHandler: UIScrollViewDelegate {
 
 extension P9CollectionViewHandler: P9CollectionViewCellDelegate {
     
-    public func collectionViewCellEvent(cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
+    public func collectionViewCellEvent(cellIdentifier: String, eventIdentifier: String?, indexPath: IndexPath?, data: Any?, extra: Any?) {
         
-        delegate?.collectionViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        if let eventIdentifier = eventIdentifier, let callback = callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] {
+            callback(indexPath, data, extra)
+        } else {
+            delegate?.collectionViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, indexPath: indexPath, data: data, extra: extra)
+        }
     }
 }

@@ -21,9 +21,9 @@ class BannerCollectionViewCell: UICollectionViewCell {
         // Initialization code
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    @IBAction func clickButtonTouchUpInside(_ sender: Any) {
         
-        delegate?.collectionViewCellEvent(cellIdentifier: BannerCollectionViewCell.identifier(), eventIdentifier: "touch", data: data, extra: nil)
+        delegate?.collectionViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.clickMe.rawValue, indexPath: nil, data: data, extra: nil)
     }
 }
 

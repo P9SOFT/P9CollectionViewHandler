@@ -77,8 +77,12 @@ extension ViewController: P9TableViewHandlerDelegate {
         print("handler \(handlerIdentifier) cell \(cellIdentifier) indexPath \(indexPath.section):\(indexPath.row) did select")
     }
     
-    func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, data: Any?, extra: Any?) {
+    func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, indexPath: IndexPath?, data: Any?, extra: Any?) {
         
-        print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "")")
+        if let indexPath = indexPath {
+            print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "") at \(indexPath)")
+        } else {
+            print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "")")
+        }
     }
 }
